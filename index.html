@@ -482,7 +482,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
               <div class="fr"><label>ランチ</label><input type="text" id="bt-lunch"></div>
               <div class="fr"><label>居酒屋</label><input type="text" id="bt-izakaya"></div>
               <div class="fr"><label>ラスト（L）時刻</label><input type="time" id="c-last" style="width:110px"></div>
-              <div class="fr"><label>社員の標準シフト</label><input type="text" id="c-seiki"></div>
+              <p style="font-size:11px;color:var(--text3);margin-top:6px">AI生成はクルーを先に配置し、足りない枠だけ社員で穴埋めします。</p>
             </div>
             <div class="card" style="margin-bottom:0">
               <div class="card-title"><i class="ti ti-calendar-week"></i>週末判定</div>
@@ -667,7 +667,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
       <div class="mf" id="wage-field"><label>時給（空欄＝区分の時給）</label><input type="number" id="f-wage" placeholder="例: 1250"></div>
       <div class="mf" id="monthly-field" style="display:none"><label>月給（円）</label><input type="number" id="f-monthly" placeholder="例: 250000"></div>
       <div class="mf"><label id="maxh-lbl">週の最大時間（空欄＝区分の上限）</label><input type="number" id="f-maxh" placeholder="例: 20"></div>
-      <div class="mf" id="maxd-field"><label>週の最大出勤日数</label><input type="number" id="f-maxd" placeholder="例: 3" min="1" max="7"></div>
+      <div class="mf" id="maxd-field"><label id="maxd-lbl">週の最大出勤日数</label><input type="number" id="f-maxd" placeholder="例: 3" min="1" max="7"></div>
       <div class="mf" id="mind-field" style="display:none"><label id="mind-lbl">週の最低出勤日数</label><input type="number" id="f-mind" placeholder="例: 5" min="0" max="7"></div>
     </div>
     <div class="sec-div">担当ポジション（複数可）</div>
@@ -1108,15 +1108,14 @@ function onTypeChange(t){
   const sei=t==='seiki';
   $('wage-field').style.display=sei?'none':'block';
   $('monthly-field').style.display=sei?'block':'none';
-  $('mind-field').style.display=['seiki','junseiki','shahou'].includes(t)?'block':'none';
-  $('mind-lbl').textContent=sei?'週の出勤日数（空欄＝毎日）':'週の最低出勤日数';
-  $('f-mind').placeholder=sei?'空欄＝毎日（例: 6）':'例: 5';
+  $('mind-field').style.display=['junseiki','shahou'].includes(t)?'block':'none';
+  $('maxd-lbl').textContent=sei?'週の最大出勤日数（空欄＝毎日OK）':'週の最大出勤日数';
+  $('f-maxd').placeholder=sei?'空欄＝毎日OK（例: 6）':'例: 3';
   $('seiki-fixed-section').style.display=['seiki','junseiki'].includes(t)?'block':'none';
   document.querySelector('#mod-staff .modal').classList.toggle('sei',sei);
-  $('maxd-field').style.display=sei?'none':'block';
   $('maxh-lbl').textContent=sei?'週の最大時間（空欄＝制限なし）':'週の最大時間（空欄＝区分の上限）';
   $('av-title').innerHTML=sei
-    ?'曜日ごとの勤務時間 <span style="font-weight:400;font-size:10px;color:var(--text3)">（空欄＝社員の標準シフト。例: 月だけ 14-L）</span>'
+    ?'曜日ごとの勤務時間 <span style="font-weight:400;font-size:10px;color:var(--text3)">（空欄＝足りない時間帯に合わせて自動。時間が決まっている曜日だけ入力 例: 14-L）</span>'
     :'入れる曜日・時間帯 <span style="font-weight:400;font-size:10px;color:var(--text3)">（タップで切替。時間欄はその曜日だけ時間が違う場合に入力）</span>';
 }
 function fillModal(s){
@@ -1166,8 +1165,8 @@ async function saveStaff(){
     password:$('f-password').value.trim()||null,
     wage:type==='seiki'?(+$('f-monthly').value||null):(+$('f-wage').value||null),
     max_h:+$('f-maxh').value||null,
-    max_days:type==='seiki'?null:(+$('f-maxd').value||null),
-    min_days:['seiki','junseiki','shahou'].includes(type)?(+$('f-mind').value||null):null,
+    max_days:+$('f-maxd').value||null,
+    min_days:['junseiki','shahou'].includes(type)?(+$('f-mind').value||null):null,
     vacations:getVacs('vacation-list'),
     fixed_days_off:['seiki','junseiki'].includes(type)?getDayRow('mod-fixed-off'):[],
     note:$('f-note').value.trim()||null,
@@ -1194,7 +1193,7 @@ function ctab(n){
 function renderCond(){
   $('s-name').value=cond.store.name;$('s-addr').value=cond.store.addr;$('s-tel').value=cond.store.tel;$('s-hours').value=cond.store.hours;
   BAND_KEYS.forEach(b=>$('bt-'+b).value=cond.bandTime[b]);
-  $('c-last').value=cond.last;$('c-seiki').value=cond.seikiShift;
+  $('c-last').value=cond.last;
   $('we-days').innerHTML=dayRowHTML();setDayRow('we-days',cond.weDays);
   $('closed-days').innerHTML=dayRowHTML();setDayRow('closed-days',cond.closed);
   TYPES.forEach(t=>{if($('cap-'+t))$('cap-'+t).value=cond.caps[t];$('wg-'+t).value=cond.wages[t];});
@@ -1212,9 +1211,8 @@ function renderCond(){
 async function saveCond(){
   const bt={};
   for(const b of BAND_KEYS){const v=norm($('bt-'+b).value);if(!parseRange(v)){alert(`${BLBL[b]}の時間が読み取れません（例: 17-L）`);return;}bt[b]=v;}
-  const ss=norm($('c-seiki').value);if(!parseRange(ss)){alert('社員の標準シフトが読み取れません（例: 10-L）');return;}
   cond.store={name:$('s-name').value.trim()||'神保町店',addr:$('s-addr').value.trim(),tel:$('s-tel').value.trim(),hours:$('s-hours').value.trim()};
-  cond.bandTime=bt;cond.last=$('c-last').value||'23:00';cond.seikiShift=ss;
+  cond.bandTime=bt;cond.last=$('c-last').value||'23:00';
   cond.weDays=getDayRow('we-days');cond.closed=getDayRow('closed-days');
   TYPES.forEach(t=>{if($('cap-'+t))cond.caps[t]=+$('cap-'+t).value||cond.caps[t];cond.wages[t]=+$('wg-'+t).value||cond.wages[t];});
   cond.wages.late=+$('wg-late').value||0;
@@ -1440,28 +1438,6 @@ function runGen(label){
       wh[s.id]=dates.reduce((a,d)=>a+parseH(sd[s.id][fmtD(d)]),0);
       wd[s.id]=dates.filter(d=>parseH(sd[s.id][fmtD(d)])>0).length;
     });
-    // 社員（全体生成時のみ）：出勤日を決める
-    if(curSec==='all'){
-      staff.filter(s=>s.type==='seiki').forEach(s=>{
-        const target=Math.min(s.min_days||7,7);// 空欄＝毎日
-        const days=shuffle(dates).filter(d=>{
-          const ds=fmtD(d),w=wdIdx(d);
-          return !isClosed(d)&&!onVac(s,ds)&&!(s.fixed_days_off||[]).includes(w)&&!sd[s.id][ds];
-        }).sort((a,b)=>{
-          const dem=d=>POS.reduce((x,p)=>x+BAND_KEYS.reduce((y,bk)=>y+req(p.key,bk,reqIdx(d)),0),0);
-          return dem(b)-dem(a);
-        });
-        for(const d of days){
-          if(wd[s.id]>=target)break;
-          const w=wdIdx(d);
-          const t=norm((s.day_times||{})[w]||cond.seikiShift);
-          const r=parseRange(t);if(!r)continue;
-          if(wh[s.id]+(r.e-r.s)>maxH(s)+0.01)continue;
-          sd[s.id][fmtD(d)]=PCODE[primaryPos(s)]+t;
-          wh[s.id]+=r.e-r.s;wd[s.id]++;
-        }
-      });
-    }
     const cov=computeCov(sd,dates);
     const slots=[];
     dates.forEach(d=>{
@@ -1508,12 +1484,52 @@ function runGen(label){
         segBands(st.seg,primaryPos(s)).forEach(bb=>{cov[ds][primaryPos(s)][bb]++;});
       }
     });
+    // ── 社員で穴埋め：クルーで埋まらなかった枠だけ社員が入る ──
+    const seikis=staff.filter(x=>x.type==='seiki');
+    const endTxt=e=>Math.abs(e-lastH())<0.01?'L':fmtT(e);
+    function seikiTry(s,sl){
+      const w=wdIdx(sl.d);
+      if(onVac(s,sl.ds)||(s.fixed_days_off||[]).includes(w))return null;
+      const code=PCODE[sl.pos];
+      const dt=(s.day_times||{})[w]||(s.day_times||{})[String(w)];
+      const r=dt?parseRange(dt):bandWin(sl.band);
+      if(!r)return null;
+      const cur=parseCell(sd[s.id][sl.ds]);
+      if(cur.length){
+        if(cur.length>1||!cur[0].ok||cur[0].code!==code)return null;// 別ポジションで出勤中
+        const g=cur[0];
+        const ns=Math.min(g.s,r.s),ne=Math.max(g.e,r.e);
+        const add=(ne-ns)-(g.e-g.s);
+        if(add<=0)return null;
+        if(wh[s.id]+add>maxH(s)+0.01)return null;
+        return{s:ns,e:ne,add,newDay:false};
+      }
+      if(wd[s.id]>=(s.max_days||7))return null;
+      if(wh[s.id]+(r.e-r.s)>maxH(s)+0.01)return null;
+      return{s:r.s,e:r.e,add:r.e-r.s,newDay:true};
+    }
+    for(let guard=0;guard<300&&seikis.length;guard++){
+      const open=slots.filter(sl=>sl.req>cov[sl.ds][sl.pos][sl.band]);
+      if(!open.length)break;
+      let best=null;
+      for(const sl of open)for(const s of seikis){
+        const t=seikiTry(s,sl);if(!t)continue;
+        const v=(hasSkill(s,sl.pos)?0:100)+(t.newDay?6:0)+t.add+wh[s.id]*0.05+Math.random()*0.5;
+        if(!best||v<best.v)best={s,sl,t,v};
+      }
+      if(!best)break;
+      const {s,sl,t}=best;
+      sd[s.id][sl.ds]=PCODE[sl.pos]+fmtT(t.s)+'-'+endTxt(t.e);
+      wh[s.id]+=t.add;if(t.newDay)wd[s.id]++;
+      cov[sl.ds]=computeCov(sd,[sl.d])[sl.ds];
+    }
     const short=shortageList(cov,dates,bands);
     const gap=short.reduce((a,x)=>a+x.need-x.have,0);
     const loads=staff.filter(s=>s.type!=='seiki').map(s=>wh[s.id]/maxH(s));
     const mean=loads.reduce((a,x)=>a+x,0)/(loads.length||1);
     const varc=loads.reduce((a,x)=>a+(x-mean)**2,0);
-    return{sd,short,score:gap*1000+varc};
+    const seikiH=staff.filter(x=>x.type==='seiki').reduce((x,y)=>x+wh[y.id],0);
+    return{sd,short,score:gap*1000+seikiH*2+varc*10};
   }
 
   const TRIALS=40;
