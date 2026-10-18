@@ -340,6 +340,9 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .modal.sei .av-b,.modal.sei .av-tbl th.bh,.modal.sei .no-sei{display:none}
 .modal.sei .av-tbl td:has(.av-b){display:none}
 
+.btn.unsaved{background:var(--w-red);color:#fff;border-color:var(--w-red);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.75}}
+
 </style>
 </head>
 <body>
@@ -549,7 +552,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
           </div>
           <button class="btn" onclick="thisWk()">今週</button>
           <button class="btn p mgr-only" id="gen-btn" onclick="genShift()"><i class="ti ti-bolt"></i>AI生成（全体）</button>
-          <button class="btn mgr-only" onclick="saveShift()"><i class="ti ti-cloud-upload"></i>保存</button>
+          <button class="btn mgr-only" id="save-btn" onclick="saveShift()"><i class="ti ti-cloud-upload"></i>保存</button>
           <button class="btn mgr-only" onclick="clearWeek()"><i class="ti ti-eraser"></i>クリア</button>
           <button class="btn" onclick="expCSV()"><i class="ti ti-download"></i>CSV</button>
           <button class="btn line-btn mgr-only" onclick="go('line')"><i class="ti ti-message-circle"></i>LINE</button>
@@ -587,6 +590,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
           <button class="btn" onclick="expPayCSV()"><i class="ti ti-download"></i>CSV</button>
           <span style="font-size:11px;color:var(--text3)">保存済みのシフト表から、その月の実際の出勤分を集計します</span>
         </div>
+        <div id="pay-note"></div>
         <div class="pay-sum" id="pay-sum"></div>
         <div style="border:1px solid var(--border);border-radius:var(--radius-lg);overflow:auto">
           <table class="ptbl"><thead><tr><th>クルー</th><th>区分</th><th>日数</th><th>月間h</th><th>うち深夜h</th><th>時給</th><th>基本給</th><th>深夜割増</th><th>支給計</th></tr></thead>
@@ -858,9 +862,26 @@ function getWkDates(){
   return Array.from({length:7},(_,i)=>addDays(mon,i));
 }
 function renderWkLbl(){const d=getWkDates()[0];$('wklbl').textContent=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（月）〜`;}
-function prevWk(){wkOff--;renderWkLbl();loadShift();}
-function nextWk(){wkOff++;renderWkLbl();loadShift();}
-function thisWk(){wkOff=0;renderWkLbl();loadShift();}
+async function changeWk(n){if(!(await confirmLeave()))return;wkOff=n;renderWkLbl();loadShift();}
+function prevWk(){changeWk(wkOff-1);}
+function nextWk(){changeWk(wkOff+1);}
+function thisWk(){changeWk(0);}
+// ── 未保存の変更 ──
+let dirty=false;
+function setDirty(v){
+  dirty=v;
+  const b=$('save-btn');if(!b)return;
+  b.classList.toggle('unsaved',v);
+  b.innerHTML=v?'<i class="ti ti-cloud-upload"></i>保存（未保存）':'<i class="ti ti-cloud-upload"></i>保存';
+}
+async function confirmLeave(){
+  if(!dirty||role!=='manager')return true;
+  if(confirm('このシフトはまだ保存されていません。\n保存しますか？\n（OK＝保存して進む／キャンセル＝保存せずに進む）')){
+    return await saveShift();
+  }
+  setDirty(false);return true;
+}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
 
 // ── クルー属性 ──
 function availBands(s,wd){const a=s.avail_bands||{};return a[wd]||a[String(wd)]||[];}
@@ -950,6 +971,7 @@ async function loadShift(){
   const {data,error}=await sb.from(TB.shifts).select('*').eq('week_start',ws).maybeSingle();
   if(error)console.error(error);
   shiftData=data&&data.schedule?data.schedule:{};
+  setDirty(false);
   renderGrid();
   if(role==='staff')renderMyWeek();
 }
@@ -1288,6 +1310,7 @@ function renderGrid(){
   updateCostBar();
 }
 function onCC(el){
+  setDirty(true);
   const sid=el.dataset.sid,ds=el.dataset.date;
   const v=norm(el.value);el.value=v;
   if(v&&parseCell(v).some(g=>!g.ok))toast('時間が読み取れません（例: H10-14 / K17-L）');
@@ -1359,8 +1382,8 @@ function updateCostBar(){
   $('cv-count').textContent=tp+'名';
 }
 async function saveShift(){
-  try{await saveShiftDB();toast('シフトを保存しました');}
-  catch(e){alert('保存失敗: '+e.message);}
+  try{await saveShiftDB();setDirty(false);toast('シフトを保存しました');return true;}
+  catch(e){alert('保存失敗: '+e.message);return false;}
 }
 function clearWeek(){
   const tgt=curSec==='all'?'この週のシフトをすべて':`この週の「${BLBL[curSec]}」のシフトを`;
@@ -1370,6 +1393,7 @@ function clearWeek(){
     if(curSec==='all')shiftData[s.id][ds]='';
     else shiftData[s.id][ds]=parseCell(shiftData[s.id][ds]).filter(g=>segMainBand(g)!==curSec).map(g=>g.raw).join('/');
   });});
+  setDirty(true);
   renderGrid();
 }
 
@@ -1548,7 +1572,8 @@ function runGen(label){
     hint.innerHTML='✅ すべての必要人数を満たしました。内容を確認して「保存」を押してください';
     setTimeout(()=>{hint.style.display='none';},5000);
   }
-  toast(`${label}のシフトを生成しました（未保存）`);
+  setDirty(true);
+  toast(`${label}のシフトを生成しました。「保存」を押すと確定します`);
 }
 
 // ══ 固定シフト ══
@@ -1608,6 +1633,7 @@ async function calcPay(){
   const merged={};
   (data||[]).forEach(r=>Object.entries(r.schedule||{}).forEach(([sid,days])=>{merged[sid]=merged[sid]||{};Object.assign(merged[sid],days);}));
   const f=fmtD(first),l=fmtD(last);
+  const savedWeeks=(data||[]).length;
   payRows=staff.map(s=>{
     const ent=Object.entries(merged[s.id]||{}).filter(([ds,v])=>ds>=f&&ds<=l&&parseH(v)>0);
     const h=Math.round(ent.reduce((a,[,v])=>a+parseH(v),0)*100)/100;
@@ -1621,6 +1647,7 @@ async function calcPay(){
   $('pay-sum').innerHTML=`<div class="pc2"><div class="pl">${m}月の人件費</div><div class="pv">¥${tp.toLocaleString()}</div></div>
     <div class="pc2"><div class="pl">総労働時間</div><div class="pv">${Math.round(th*10)/10}h</div></div>
     <div class="pc2"><div class="pl">出勤クルー</div><div class="pv">${payRows.filter(r=>r.days).length}名</div></div>`;
+  $('pay-note').innerHTML=savedWeeks?'':`<div class="hint warn" style="display:flex">⚠️ ${y}年${m}月の保存済みシフトがありません。シフト表でAI生成・入力したあと「保存」を押すと、ここに集計されます。</div>`;
   const mx=Math.max(1,...payRows.map(r=>r.total));
   $('pay-body').innerHTML=payRows.map(r=>`<tr><td><div style="font-weight:700">${esc(r.s.name)}</div><div class="pay-bar-wrap"><div class="pay-bar" style="width:${Math.round(r.total/mx*100)}%"></div></div></td>
     <td>${tbadge(r.s.type)}</td><td>${r.days}日</td><td>${r.h}h</td><td>${r.lh?r.lh+'h':''}</td>
@@ -1685,7 +1712,8 @@ async function saveMyPage(){
 }
 
 // ══ ナビ ══
-function go(name){
+async function go(name){
+  if($('pg-shift').classList.contains('on')&&name!=='shift'&&!(await confirmLeave()))return;
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('[data-pg]').forEach(b=>b.classList.remove('active'));
   $('pg-'+name).classList.add('on');
