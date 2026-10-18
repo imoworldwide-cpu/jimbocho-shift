@@ -358,7 +358,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
       <div class="login-sub" id="login-store">神保町店</div>
       <div class="login-tabs">
         <button class="login-tab on" onclick="setLR('manager')">店長</button>
-        <button class="login-tab" onclick="setLR('staff')">スタッフ</button>
+        <button class="login-tab" onclick="setLR('staff')">クルー</button>
       </div>
       <div id="login-manager-area">
         <div class="lf"><label>パスワード</label>
@@ -393,7 +393,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
         <path fill="#fff" d="M134.88,23.48c-5.18-2.92-10.31-4.28-17.42-4.26-.03-2.57-.05-4.75-.05-5.88-.04-3.81-5.1-3.75-5.06.05,0,0,.18,17.91.2,20.37.04,2.88,5.1,3.06,5.07-.21-.02-1.45-.05-4.93-.1-8.65,4.25-.54,13.07,2.33,14.75,3.26,3.37,1.87,5.5-3.05,2.61-4.69Z"/>
       </svg>
     </div>
-    <button class="rail-btn active" data-pg="staff" onclick="go('staff')"><i class="ti ti-users"></i><span class="ttip">スタッフ</span></button>
+    <button class="rail-btn active" data-pg="staff" onclick="go('staff')"><i class="ti ti-users"></i><span class="ttip">クルー</span></button>
     <button class="rail-btn" data-pg="cond" onclick="go('cond')"><i class="ti ti-settings"></i><span class="ttip">条件設定</span></button>
     <button class="rail-btn" data-pg="fixed" onclick="go('fixed')"><i class="ti ti-pin"></i><span class="ttip">固定シフト</span></button>
     <div class="rail-sep"></div>
@@ -407,7 +407,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <div class="main">
     <div class="topbar">
       <div style="flex:1;min-width:0">
-        <div class="topbar-title" id="tbtitle">スタッフ管理</div>
+        <div class="topbar-title" id="tbtitle">クルー管理</div>
         <div class="topbar-sub" id="tbstore">神保町店</div>
       </div>
       <span class="topbar-role" id="tbrole">店長</span>
@@ -419,7 +419,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
       <div class="pg on" id="pg-staff">
         <div class="store-banner" id="store-banner"></div>
         <div class="stat-row">
-          <div class="sc"><div class="sl">総スタッフ</div><div class="sv" id="st0">—</div><div class="su">名</div></div>
+          <div class="sc"><div class="sl">総クルー</div><div class="sv" id="st0">—</div><div class="su">名</div></div>
           <div class="sc"><div class="sl">仕込み可</div><div class="sv" id="st1">—</div><div class="su">名</div></div>
           <div class="sc"><div class="sl">ランチ可</div><div class="sv" id="st2">—</div><div class="su">名</div></div>
           <div class="sc"><div class="sl">居酒屋可</div><div class="sv" id="st3">—</div><div class="su">名</div></div>
@@ -442,7 +442,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
           <div class="card-title"><i class="ti ti-pin"></i> 固定シフト設定</div>
           <p style="font-size:12px;color:var(--text3);margin-bottom:12px">「毎週この曜日はこの人がこの時間帯」を登録します。AI生成時に最優先で配置されます。</p>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;align-items:end;margin-bottom:16px">
-            <div><div class="fx-lbl">スタッフ</div><select id="fx-staff" class="fx-in"></select></div>
+            <div><div class="fx-lbl">クルー</div><select id="fx-staff" class="fx-in"></select></div>
             <div><div class="fx-lbl">曜日</div><select id="fx-day" class="fx-in">
               <option value="0">月曜</option><option value="1">火曜</option><option value="2">水曜</option><option value="3">木曜</option><option value="4">金曜</option><option value="5">土曜</option><option value="6">日曜</option>
             </select></div>
@@ -473,7 +473,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
             </div>
             <div class="card" style="margin-bottom:0">
               <div class="card-title"><i class="ti ti-clock"></i>時間帯（標準シフト）</div>
-              <p style="font-size:11px;color:var(--text3);margin-bottom:9px">スタッフ個別の希望時間がない時に使う時間です。<code>L</code>＝ラスト</p>
+              <p style="font-size:11px;color:var(--text3);margin-bottom:9px">クルー個別の希望時間がない時に使う時間です。<code>L</code>＝ラスト</p>
               <div class="fr"><label>仕込み</label><input type="text" id="bt-prep"></div>
               <div class="fr"><label>ランチ</label><input type="text" id="bt-lunch"></div>
               <div class="fr"><label>居酒屋</label><input type="text" id="bt-izakaya"></div>
@@ -506,17 +506,17 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
           <div class="cond-grid">
             <div class="card" style="margin-bottom:0">
               <div class="card-title"><i class="ti ti-clock"></i>週労働時間上限（区分ごと）</div>
-              <div class="fr"><label>スタッフ</label><input type="number" id="cap-general"><span class="u">h/週</span></div>
-              <div class="fr"><label>学生スタッフ</label><input type="number" id="cap-student"><span class="u">h/週</span></div>
-              <div class="fr"><label>社保付きスタッフ</label><input type="number" id="cap-shahou"><span class="u">h/週</span></div>
+              <div class="fr"><label>クルー</label><input type="number" id="cap-general"><span class="u">h/週</span></div>
+              <div class="fr"><label>学生クルー</label><input type="number" id="cap-student"><span class="u">h/週</span></div>
+              <div class="fr"><label>社保付きクルー</label><input type="number" id="cap-shahou"><span class="u">h/週</span></div>
               <div class="fr"><label>セカンド社員</label><input type="number" id="cap-junseiki"><span class="u">h/週</span></div>
               <div class="fr"><label>社員</label><input type="number" id="cap-seiki"><span class="u">h/週</span></div>
             </div>
             <div class="card" style="margin-bottom:0">
               <div class="card-title"><i class="ti ti-coin"></i>時給設定</div>
-              <div class="fr"><label>スタッフ</label><input type="number" id="wg-general"><span class="u">円/h</span></div>
-              <div class="fr"><label>学生スタッフ</label><input type="number" id="wg-student"><span class="u">円/h</span></div>
-              <div class="fr"><label>社保付きスタッフ</label><input type="number" id="wg-shahou"><span class="u">円/h</span></div>
+              <div class="fr"><label>クルー</label><input type="number" id="wg-general"><span class="u">円/h</span></div>
+              <div class="fr"><label>学生クルー</label><input type="number" id="wg-student"><span class="u">円/h</span></div>
+              <div class="fr"><label>社保付きクルー</label><input type="number" id="wg-shahou"><span class="u">円/h</span></div>
               <div class="fr"><label>セカンド社員</label><input type="number" id="wg-junseiki"><span class="u">円/h</span></div>
               <div class="fr"><label>社員（月給）</label><input type="number" id="wg-seiki"><span class="u">円/月</span></div>
               <div class="fr"><label>深夜割増（22時〜）</label><input type="number" id="wg-late"><span class="u">%増</span></div>
@@ -585,7 +585,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
         </div>
         <div class="pay-sum" id="pay-sum"></div>
         <div style="border:1px solid var(--border);border-radius:var(--radius-lg);overflow:auto">
-          <table class="ptbl"><thead><tr><th>スタッフ</th><th>区分</th><th>日数</th><th>月間h</th><th>うち深夜h</th><th>時給</th><th>基本給</th><th>深夜割増</th><th>支給計</th></tr></thead>
+          <table class="ptbl"><thead><tr><th>クルー</th><th>区分</th><th>日数</th><th>月間h</th><th>うち深夜h</th><th>時給</th><th>基本給</th><th>深夜割増</th><th>支給計</th></tr></thead>
           <tbody id="pay-body"><tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">「集計」を押してください</td></tr></tbody>
           </table>
         </div>
@@ -627,7 +627,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   </div>
   <nav class="bottom-nav">
     <div class="bottom-nav-inner">
-      <button class="bn-btn active" data-pg="staff" onclick="go('staff')"><i class="ti ti-users"></i><span>スタッフ</span></button>
+      <button class="bn-btn active" data-pg="staff" onclick="go('staff')"><i class="ti ti-users"></i><span>クルー</span></button>
       <button class="bn-btn" data-pg="cond" onclick="go('cond')"><i class="ti ti-settings"></i><span>条件</span></button>
       <button class="bn-btn" data-pg="fixed" onclick="go('fixed')"><i class="ti ti-pin"></i><span>固定</span></button>
       <button class="bn-btn" data-pg="shift" onclick="go('shift')"><i class="ti ti-calendar"></i><span>シフト</span></button>
@@ -643,7 +643,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <div class="modal">
     <div class="modal-handle"></div>
     <button class="xb" onclick="closeMod()"><i class="ti ti-x"></i></button>
-    <h2 id="mod-title">スタッフ追加</h2>
+    <h2 id="mod-title">クルー追加</h2>
     <input type="hidden" id="eid">
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px">
       <div class="mf"><label>名前</label><input type="text" id="f-name" placeholder="山田 太郎"></div>
@@ -651,14 +651,14 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
     </div>
     <div class="mf"><label>区分</label>
       <select id="f-type" onchange="onTypeChange(this.value)">
-        <option value="general">スタッフ</option>
-        <option value="student">学生スタッフ</option>
-        <option value="shahou">社保付きスタッフ</option>
+        <option value="general">クルー</option>
+        <option value="student">学生クルー</option>
+        <option value="shahou">社保付きクルー</option>
         <option value="junseiki">セカンド社員</option>
         <option value="seiki">社員</option>
       </select>
     </div>
-    <div class="mf"><label>個人パスワード（スタッフがログインに使用）</label><input type="text" id="f-password" placeholder="例: jimbo123" autocomplete="off"></div>
+    <div class="mf"><label>個人パスワード（クルーがログインに使用）</label><input type="text" id="f-password" placeholder="例: jimbo123" autocomplete="off"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div class="mf" id="wage-field"><label>時給（空欄＝区分の時給）</label><input type="number" id="f-wage" placeholder="例: 1250"></div>
       <div class="mf" id="monthly-field" style="display:none"><label>月給（円）</label><input type="number" id="f-monthly" placeholder="例: 250000"></div>
@@ -730,7 +730,7 @@ const PLBL=Object.fromEntries(POS.map(p=>[p.key,p.lbl]));
 const PCODE=Object.fromEntries(POS.map(p=>[p.key,p.code]));
 const CODE2POS={K:'kitchen',H:'hall',W:'wash','仕':'kitchen'};
 const TYPES=['general','student','shahou','junseiki','seiki'];
-const TLBL={general:'スタッフ',student:'学生',shahou:'社保付き',junseiki:'セカンド社員',seiki:'社員'};
+const TLBL={general:'クルー',student:'学生',shahou:'社保付き',junseiki:'セカンド社員',seiki:'社員'};
 const TCLS={general:'tb-general',student:'tb-student',shahou:'tb-shahou',junseiki:'tb-junseiki',seiki:'tb-seiki'};
 const PAL=['#B5D4F4:#0C447C','#9FE1CB:#085041','#CECBF6:#3C3489','#FAC775:#633806','#F5C4B3:#712B13','#C0DD97:#27500A','#F4C0D1:#72243E','#85B7EB:#1A3A6B','#F0B3D0:#5C1A3A','#A8D8B9:#0A3A20','#FFC8A2:#5C2500','#D4B5F4:#2C0A7C'];
 
@@ -858,7 +858,7 @@ function prevWk(){wkOff--;renderWkLbl();loadShift();}
 function nextWk(){wkOff++;renderWkLbl();loadShift();}
 function thisWk(){wkOff=0;renderWkLbl();loadShift();}
 
-// ── スタッフ属性 ──
+// ── クルー属性 ──
 function availBands(s,wd){const a=s.avail_bands||{};return a[wd]||a[String(wd)]||[];}
 function canBand(s,b){return s.type==='seiki'||[0,1,2,3,4,5,6].some(i=>availBands(s,i).includes(b));}
 function maxH(s){return s.max_h||cond.caps[s.type]||28;}
@@ -903,7 +903,7 @@ function showLoginErr(msg){const e=$('lerr');e.textContent=msg;e.style.display='
 function loginSuccess(){
   $('login-screen').style.display='none';
   $('app').classList.remove('hidden');
-  $('tbrole').textContent=role==='manager'?'店長':'スタッフ';
+  $('tbrole').textContent=role==='manager'?'店長':'クルー';
   applyRole();init();
 }
 function doLogout(){
@@ -985,7 +985,7 @@ function applyStoreInfo(){
     (cond.closed.length?`<div class="store-info"><i class="ti ti-door-off"></i>定休 ${cond.closed.map(i=>DN[i]).join('・')}</div>`:'');
 }
 
-// ══ スタッフ一覧 ══
+// ══ クルー一覧 ══
 function onStaffSearch(kw){staffSearchKw=kw.trim();renderStaff();}
 function availSummary(s,b){return[0,1,2,3,4,5,6].filter(i=>availBands(s,i).includes(b)).map(i=>DN[i]).join('');}
 function renderStaff(){
@@ -997,7 +997,7 @@ function renderStaff(){
   $('st2').textContent=staff.filter(s=>s.type!=='seiki'&&canBand(s,'lunch')).length;
   $('st3').textContent=staff.filter(s=>s.type!=='seiki'&&canBand(s,'izakaya')).length;
   if(!list.length){
-    g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-search" style="font-size:28px;display:block;margin-bottom:8px;opacity:.3"></i><p>${kw?`「${esc(kw)}」に一致するスタッフが見つかりません`:'スタッフを追加してください'}</p></div>`;
+    g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3)"><i class="ti ti-search" style="font-size:28px;display:block;margin-bottom:8px;opacity:.3"></i><p>${kw?`「${esc(kw)}」に一致するクルーが見つかりません`:'クルーを追加してください'}</p></div>`;
     return;
   }
   const SECTIONS=[
@@ -1057,7 +1057,7 @@ function showStaffInfo(sid){
 }
 function closeStaffInfo(e){if(!e||e.target===$('staff-info-popup'))$('staff-info-popup').style.display='none';}
 
-// ══ スタッフ編集モーダル ══
+// ══ クルー編集モーダル ══
 function avGridHTML(prefix){
   return`<table class="av-tbl"><thead><tr><th></th>${BANDS.map(b=>`<th>${b.lbl}</th>`).join('')}<th>時間（任意）</th></tr></thead><tbody>
   ${DN.map((d,i)=>`<tr><td class="dn">${d}</td>${BANDS.map(b=>`<td><button type="button" class="av-b" data-b="${b.key}" data-d="${i}" id="${prefix}-${i}-${b.key}" onclick="this.classList.toggle('on')">${b.lbl}</button></td>`).join('')}
@@ -1128,12 +1128,12 @@ function fillModal(s){
   onTypeChange($('f-type').value);
 }
 function openAdd(){
-  $('mod-title').textContent='スタッフ追加';fillModal(null);
+  $('mod-title').textContent='クルー追加';fillModal(null);
   $('del-btn').style.display='none';$('mod-staff').classList.add('open');
 }
 function editStaff(id){
   const s=staff.find(x=>x.id===id);if(!s)return;
-  $('mod-title').textContent='スタッフ編集';fillModal(s);
+  $('mod-title').textContent='クルー編集';fillModal(s);
   $('del-btn').style.display='inline-flex';$('mod-staff').classList.add('open');
 }
 function closeMod(){$('mod-staff').classList.remove('open');}
@@ -1165,7 +1165,7 @@ async function saveStaff(){
   catch(e){alert('保存失敗: '+e.message);}
 }
 async function delStaff(){
-  if(!confirm('このスタッフを削除しますか？'))return;
+  if(!confirm('このクルーを削除しますか？'))return;
   const id=$('eid').value;
   const {error}=await sb.from(TB.staff).delete().eq('id',id);
   if(error){alert('削除失敗: '+error.message);return;}
@@ -1245,7 +1245,7 @@ function rowCost(s,wkH){return s.type==='seiki'?Math.round(wageOf(s)*12/52):Math
 function renderGrid(){
   if(!$('sghead'))return;
   const dates=getWkDates(),mgr=role==='manager';
-  $('sghead').innerHTML=`<tr><th class="name-th">スタッフ</th>${dates.map((d,i)=>`<th class="${isClosed(d)?'closed-th':isWE(d)?'we-th':''}">${DN[i]}<br><span style="font-size:9px;font-weight:500">${d.getMonth()+1}/${d.getDate()}${isHoliday(fmtD(d))?'🎌':''}${isClosed(d)?' 定休':''}</span></th>`).join('')}<th style="min-width:80px;text-align:right">週計${mgr?'/給与':''}</th></tr>`;
+  $('sghead').innerHTML=`<tr><th class="name-th">クルー</th>${dates.map((d,i)=>`<th class="${isClosed(d)?'closed-th':isWE(d)?'we-th':''}">${DN[i]}<br><span style="font-size:9px;font-weight:500">${d.getMonth()+1}/${d.getDate()}${isHoliday(fmtD(d))?'🎌':''}${isClosed(d)?' 定休':''}</span></th>`).join('')}<th style="min-width:80px;text-align:right">週計${mgr?'/給与':''}</th></tr>`;
   let body='',prevSei=null;
   gridStaff().forEach(s=>{
     const sid=s.id,c=ac(staff.indexOf(s));
@@ -1378,7 +1378,7 @@ function buildShiftText(s,d,band,pos){
   return{text:code+norm(t),h:r.e-r.s,seg:{code,s:r.s,e:r.e,ok:true}};
 }
 function genShift(){
-  if(!staff.length){alert('スタッフを追加してください');return;}
+  if(!staff.length){alert('クルーを追加してください');return;}
   const label=curSec==='all'?'全体':BLBL[curSec];
   const has=getWkDates().some(d=>staff.some(s=>shiftData[s.id]?.[fmtD(d)]));
   if(has&&!confirm(curSec==='all'
@@ -1512,7 +1512,7 @@ function runGen(label){
   const hint=$('s-hint');
   if(best.short.length){
     hint.className='hint warn';hint.style.display='flex';hint.style.flexDirection='column';hint.style.alignItems='flex-start';hint.style.gap='3px';
-    hint.innerHTML=`<div style="font-size:13px;font-weight:700">⚠️ 人員不足 ${best.short.length}件（入れる人がいない枠）— 手入力か、スタッフの入れる曜日を見直してください</div>`+
+    hint.innerHTML=`<div style="font-size:13px;font-weight:700">⚠️ 人員不足 ${best.short.length}件（入れる人がいない枠）— 手入力か、クルーの入れる曜日を見直してください</div>`+
       best.short.map(x=>`<div style="font-size:11px">● ${x.d.getMonth()+1}/${x.d.getDate()}(${DN[wdIdx(x.d)]}) ${BLBL[x.band]}・${PLBL[x.pos]}：${x.have}/${x.need}人</div>`).join('');
   }else{
     hint.className='hint ok';hint.style.display='flex';hint.style.flexDirection='';
@@ -1551,9 +1551,9 @@ function renderFixedList(){
 async function addFixedShift(){
   const staff_id=$('fx-staff').value,day_idx=+$('fx-day').value,band=$('fx-band').value,pos_key=$('fx-pos').value;
   const shift_time=norm($('fx-time').value)||null;
-  if(!staff_id){alert('スタッフを選択してください');return;}
+  if(!staff_id){alert('クルーを選択してください');return;}
   if(shift_time&&!parseRange(shift_time)){alert('時間が読み取れません（例: 9-13）');return;}
-  if(fixedShifts.some(f=>f.staff_id===staff_id&&f.day_idx===day_idx)){alert('このスタッフはこの曜日にすでに固定シフトがあります');return;}
+  if(fixedShifts.some(f=>f.staff_id===staff_id&&f.day_idx===day_idx)){alert('このクルーはこの曜日にすでに固定シフトがあります');return;}
   const {data,error}=await sb.from(TB.fixed).insert({staff_id,day_idx,band,pos_key,shift_time}).select().single();
   if(error){alert('保存失敗: '+error.message);return;}
   fixedShifts.push(data);$('fx-time').value='';renderFixedList();toast('固定シフトを追加しました');
@@ -1591,7 +1591,7 @@ async function calcPay(){
   const tp=payRows.reduce((a,r)=>a+r.total,0),th=payRows.reduce((a,r)=>a+r.h,0);
   $('pay-sum').innerHTML=`<div class="pc2"><div class="pl">${m}月の人件費</div><div class="pv">¥${tp.toLocaleString()}</div></div>
     <div class="pc2"><div class="pl">総労働時間</div><div class="pv">${Math.round(th*10)/10}h</div></div>
-    <div class="pc2"><div class="pl">出勤スタッフ</div><div class="pv">${payRows.filter(r=>r.days).length}名</div></div>`;
+    <div class="pc2"><div class="pl">出勤クルー</div><div class="pv">${payRows.filter(r=>r.days).length}名</div></div>`;
   const mx=Math.max(1,...payRows.map(r=>r.total));
   $('pay-body').innerHTML=payRows.map(r=>`<tr><td><div style="font-weight:700">${esc(r.s.name)}</div><div class="pay-bar-wrap"><div class="pay-bar" style="width:${Math.round(r.total/mx*100)}%"></div></div></td>
     <td>${tbadge(r.s.type)}</td><td>${r.days}日</td><td>${r.h}h</td><td>${r.lh?r.lh+'h':''}</td>
@@ -1600,7 +1600,7 @@ async function calcPay(){
 }
 async function expPayCSV(){
   await calcPay();
-  dlCSV([['スタッフ','区分','日数','月間h','深夜h','時給/月給','基本給','深夜割増','支給計'],...payRows.map(r=>[r.s.name,tl(r.s.type),r.days,r.h,r.lh,r.w,r.basic,r.late,r.total])],`payroll_jimbocho_${$('pay-mo').value}.csv`);
+  dlCSV([['クルー','区分','日数','月間h','深夜h','時給/月給','基本給','深夜割増','支給計'],...payRows.map(r=>[r.s.name,tl(r.s.type),r.days,r.h,r.lh,r.w,r.basic,r.late,r.total])],`payroll_jimbocho_${$('pay-mo').value}.csv`);
 }
 
 // ══ CSV / LINE ══
@@ -1611,7 +1611,7 @@ function dlCSV(rows,fn){
 }
 function expCSV(){
   const dates=getWkDates();
-  const rows=[['スタッフ','区分',...dates.map((d,i)=>`${DN[i]} ${d.getMonth()+1}/${d.getDate()}`),'週計h']];
+  const rows=[['クルー','区分',...dates.map((d,i)=>`${DN[i]} ${d.getMonth()+1}/${d.getDate()}`),'週計h']];
   sortedStaff().forEach(s=>{const c=dates.map(d=>shiftData[s.id]?.[fmtD(d)]||'');rows.push([s.name,tl(s.type),...c,Math.round(c.reduce((a,v)=>a+parseH(v),0)*100)/100]);});
   dlCSV(rows,`shift_jimbocho_${fmtD(dates[0])}.csv`);
 }
@@ -1661,7 +1661,7 @@ function go(name){
   document.querySelectorAll('[data-pg]').forEach(b=>b.classList.remove('active'));
   $('pg-'+name).classList.add('on');
   document.querySelectorAll(`[data-pg="${name}"]`).forEach(b=>b.classList.add('active'));
-  const T={staff:'スタッフ管理',cond:'勤務条件設定',fixed:'固定シフト設定',shift:'シフト表',pay:'給与・月次集計',line:'LINE共有',mypage:'マイページ'};
+  const T={staff:'クルー管理',cond:'勤務条件設定',fixed:'固定シフト設定',shift:'シフト表',pay:'給与・月次集計',line:'LINE共有',mypage:'マイページ'};
   $('tbtitle').textContent=T[name]||name;
   $('tbacts').innerHTML=name==='staff'&&role==='manager'?'<button class="btn p" onclick="openAdd()"><i class="ti ti-plus"></i>追加</button>':'';
   if(name==='cond')renderCond();
@@ -1672,7 +1672,7 @@ function go(name){
   if(name==='mypage')loadMyPage();
 }
 
-// ══ 初期データ（Excel「神保町店スタッフ」より） ══
+// ══ 初期データ（Excel「神保町店クルー」より） ══
 const A=(o)=>o;// avail_bands: {曜日:[時間帯]} 0=月〜6=日
 const SEED_STAFF=[
   {name:'田中 浩二',age:62,type:'general',skills:['kitchen'],
@@ -1716,7 +1716,7 @@ async function seedInitialData(){
   if(error){console.log('DB確認失敗、シードスキップ:',error.message);return;}
   if(ex&&ex.length&&!reset)return;
   if(reset){
-    if(!confirm('神保町店のスタッフ・シフトをすべて削除して初期データに戻します。よろしいですか？'))return;
+    if(!confirm('神保町店のクルー・シフトをすべて削除して初期データに戻します。よろしいですか？'))return;
     await sb.from(TB.fixed).delete().neq('id','00000000-0000-0000-0000-000000000000');
     await sb.from(TB.shifts).delete().neq('id','00000000-0000-0000-0000-000000000000');
     await sb.from(TB.staff).delete().neq('id','00000000-0000-0000-0000-000000000000');
@@ -1728,7 +1728,7 @@ async function seedInitialData(){
   }));
   const {error:e2}=await sb.from(TB.staff).insert(rows);
   if(e2)console.error('初期データ投入エラー:',e2.message);
-  else toast('Excelのスタッフ12名を登録しました');
+  else toast('Excelのクルー12名を登録しました');
 }
 
 let inited=false;
