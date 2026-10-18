@@ -1490,6 +1490,7 @@ function runGen(label){
     function seikiTry(s,sl){
       const w=wdIdx(sl.d);
       if(onVac(s,sl.ds)||(s.fixed_days_off||[]).includes(w))return null;
+      if(!hasSkill(s,sl.pos))return null;// 担当ポジション以外には入れない
       const code=PCODE[sl.pos];
       const dt=(s.day_times||{})[w]||(s.day_times||{})[String(w)];
       const r=dt?parseRange(dt):bandWin(sl.band);
@@ -1514,7 +1515,7 @@ function runGen(label){
       let best=null;
       for(const sl of open)for(const s of seikis){
         const t=seikiTry(s,sl);if(!t)continue;
-        const v=(hasSkill(s,sl.pos)?0:100)+(t.newDay?6:0)+t.add+wh[s.id]*0.05+Math.random()*0.5;
+        const v=(t.newDay?6:0)+t.add+wh[s.id]*0.05+Math.random()*0.5;
         if(!best||v<best.v)best={s,sl,t,v};
       }
       if(!best)break;
