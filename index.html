@@ -336,6 +336,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .fx-lbl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:4px}
 .fx-in{width:100%;padding:8px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:13px;font-family:inherit}
 
+/* 社員のときは時間帯ボタンを隠し、曜日ごとの時間だけ残す */
+.modal.sei .av-b,.modal.sei .av-tbl th.bh,.modal.sei .no-sei{display:none}
+.modal.sei .av-tbl td:has(.av-b){display:none}
+
 </style>
 </head>
 <body>
@@ -510,7 +514,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
               <div class="fr"><label>学生クルー</label><input type="number" id="cap-student"><span class="u">h/週</span></div>
               <div class="fr"><label>社保付きクルー</label><input type="number" id="cap-shahou"><span class="u">h/週</span></div>
               <div class="fr"><label>セカンド社員</label><input type="number" id="cap-junseiki"><span class="u">h/週</span></div>
-              <div class="fr"><label>社員</label><input type="number" id="cap-seiki"><span class="u">h/週</span></div>
+              <p style="font-size:11px;color:var(--text3);margin-top:4px">社員は時間上限なし（毎日入れます）。個別に制限したい場合はクルー編集の「週の最大時間」に入力。</p>
             </div>
             <div class="card" style="margin-bottom:0">
               <div class="card-title"><i class="ti ti-coin"></i>時給設定</div>
@@ -662,16 +666,16 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div class="mf" id="wage-field"><label>時給（空欄＝区分の時給）</label><input type="number" id="f-wage" placeholder="例: 1250"></div>
       <div class="mf" id="monthly-field" style="display:none"><label>月給（円）</label><input type="number" id="f-monthly" placeholder="例: 250000"></div>
-      <div class="mf"><label>週の最大時間（空欄＝区分の上限）</label><input type="number" id="f-maxh" placeholder="例: 20"></div>
-      <div class="mf"><label>週の最大出勤日数</label><input type="number" id="f-maxd" placeholder="例: 3" min="1" max="7"></div>
-      <div class="mf" id="mind-field" style="display:none"><label>週の最低出勤日数</label><input type="number" id="f-mind" placeholder="例: 5" min="0" max="7"></div>
+      <div class="mf"><label id="maxh-lbl">週の最大時間（空欄＝区分の上限）</label><input type="number" id="f-maxh" placeholder="例: 20"></div>
+      <div class="mf" id="maxd-field"><label>週の最大出勤日数</label><input type="number" id="f-maxd" placeholder="例: 3" min="1" max="7"></div>
+      <div class="mf" id="mind-field" style="display:none"><label id="mind-lbl">週の最低出勤日数</label><input type="number" id="f-mind" placeholder="例: 5" min="0" max="7"></div>
     </div>
     <div class="sec-div">担当ポジション（複数可）</div>
     <div class="mf"><div id="pos-sk" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px"></div></div>
-    <div class="sec-div">入れる曜日・時間帯 <span style="font-weight:400;font-size:10px;color:var(--text3)">（タップで切替。時間欄はその曜日だけ時間が違う場合に入力）</span></div>
+    <div class="sec-div" id="av-title">入れる曜日・時間帯 <span style="font-weight:400;font-size:10px;color:var(--text3)">（タップで切替。時間欄はその曜日だけ時間が違う場合に入力）</span></div>
     <div class="mf" id="mod-av"></div>
-    <div class="sec-div">時間帯ごとの希望時間 <span style="font-weight:400;font-size:10px;color:var(--text3)">（空欄＝店の標準時間）</span></div>
-    <div class="mf times-row">
+    <div class="sec-div no-sei">時間帯ごとの希望時間 <span style="font-weight:400;font-size:10px;color:var(--text3)">（空欄＝店の標準時間）</span></div>
+    <div class="mf times-row no-sei">
       <div><label>仕込み</label><input id="f-t-prep" placeholder="例: 9-13"></div>
       <div><label>ランチ</label><input id="f-t-lunch" placeholder="例: 10-14"></div>
       <div><label>居酒屋</label><input id="f-t-izakaya" placeholder="例: 17-23"></div>
@@ -861,7 +865,7 @@ function thisWk(){wkOff=0;renderWkLbl();loadShift();}
 // ── クルー属性 ──
 function availBands(s,wd){const a=s.avail_bands||{};return a[wd]||a[String(wd)]||[];}
 function canBand(s,b){return s.type==='seiki'||[0,1,2,3,4,5,6].some(i=>availBands(s,i).includes(b));}
-function maxH(s){return s.max_h||cond.caps[s.type]||28;}
+function maxH(s){if(s.max_h)return s.max_h;if(s.type==='seiki')return 168;return cond.caps[s.type]||28;}// 社員は月給なので個別設定がなければ時間上限なし
 function maxDays(s){return s.max_days||7;}
 function wageOf(s){return s.wage||cond.wages[s.type]||1250;}
 function isMinor(s){return s.age!=null&&s.age!==''&&+s.age<18;}
@@ -1059,7 +1063,7 @@ function closeStaffInfo(e){if(!e||e.target===$('staff-info-popup'))$('staff-info
 
 // ══ クルー編集モーダル ══
 function avGridHTML(prefix){
-  return`<table class="av-tbl"><thead><tr><th></th>${BANDS.map(b=>`<th>${b.lbl}</th>`).join('')}<th>時間（任意）</th></tr></thead><tbody>
+  return`<table class="av-tbl"><thead><tr><th></th>${BANDS.map(b=>`<th class="bh">${b.lbl}</th>`).join('')}<th>時間（任意）</th></tr></thead><tbody>
   ${DN.map((d,i)=>`<tr><td class="dn">${d}</td>${BANDS.map(b=>`<td><button type="button" class="av-b" data-b="${b.key}" data-d="${i}" id="${prefix}-${i}-${b.key}" onclick="this.classList.toggle('on')">${b.lbl}</button></td>`).join('')}
   <td><input id="${prefix}-t-${i}" placeholder="例: 14-L"></td></tr>`).join('')}</tbody></table>`;
 }
@@ -1105,7 +1109,15 @@ function onTypeChange(t){
   $('wage-field').style.display=sei?'none':'block';
   $('monthly-field').style.display=sei?'block':'none';
   $('mind-field').style.display=['seiki','junseiki','shahou'].includes(t)?'block':'none';
+  $('mind-lbl').textContent=sei?'週の出勤日数（空欄＝毎日）':'週の最低出勤日数';
+  $('f-mind').placeholder=sei?'空欄＝毎日（例: 6）':'例: 5';
   $('seiki-fixed-section').style.display=['seiki','junseiki'].includes(t)?'block':'none';
+  document.querySelector('#mod-staff .modal').classList.toggle('sei',sei);
+  $('maxd-field').style.display=sei?'none':'block';
+  $('maxh-lbl').textContent=sei?'週の最大時間（空欄＝制限なし）':'週の最大時間（空欄＝区分の上限）';
+  $('av-title').innerHTML=sei
+    ?'曜日ごとの勤務時間 <span style="font-weight:400;font-size:10px;color:var(--text3)">（空欄＝社員の標準シフト。例: 月だけ 14-L）</span>'
+    :'入れる曜日・時間帯 <span style="font-weight:400;font-size:10px;color:var(--text3)">（タップで切替。時間欄はその曜日だけ時間が違う場合に入力）</span>';
 }
 function fillModal(s){
   $('eid').value=s?s.id:'';
@@ -1154,7 +1166,7 @@ async function saveStaff(){
     password:$('f-password').value.trim()||null,
     wage:type==='seiki'?(+$('f-monthly').value||null):(+$('f-wage').value||null),
     max_h:+$('f-maxh').value||null,
-    max_days:+$('f-maxd').value||null,
+    max_days:type==='seiki'?null:(+$('f-maxd').value||null),
     min_days:['seiki','junseiki','shahou'].includes(type)?(+$('f-mind').value||null):null,
     vacations:getVacs('vacation-list'),
     fixed_days_off:['seiki','junseiki'].includes(type)?getDayRow('mod-fixed-off'):[],
@@ -1185,7 +1197,7 @@ function renderCond(){
   $('c-last').value=cond.last;$('c-seiki').value=cond.seikiShift;
   $('we-days').innerHTML=dayRowHTML();setDayRow('we-days',cond.weDays);
   $('closed-days').innerHTML=dayRowHTML();setDayRow('closed-days',cond.closed);
-  TYPES.forEach(t=>{$('cap-'+t).value=cond.caps[t];$('wg-'+t).value=cond.wages[t];});
+  TYPES.forEach(t=>{if($('cap-'+t))$('cap-'+t).value=cond.caps[t];$('wg-'+t).value=cond.wages[t];});
   $('wg-late').value=cond.wages.late;
   let h='';
   BANDS.forEach((b,bi)=>{
@@ -1204,7 +1216,7 @@ async function saveCond(){
   cond.store={name:$('s-name').value.trim()||'神保町店',addr:$('s-addr').value.trim(),tel:$('s-tel').value.trim(),hours:$('s-hours').value.trim()};
   cond.bandTime=bt;cond.last=$('c-last').value||'23:00';cond.seikiShift=ss;
   cond.weDays=getDayRow('we-days');cond.closed=getDayRow('closed-days');
-  TYPES.forEach(t=>{cond.caps[t]=+$('cap-'+t).value||cond.caps[t];cond.wages[t]=+$('wg-'+t).value||cond.wages[t];});
+  TYPES.forEach(t=>{if($('cap-'+t))cond.caps[t]=+$('cap-'+t).value||cond.caps[t];cond.wages[t]=+$('wg-'+t).value||cond.wages[t];});
   cond.wages.late=+$('wg-late').value||0;
   document.querySelectorAll('.req-in').forEach(el=>{cond.req[el.dataset.p][el.dataset.b][+el.dataset.d]=Math.max(0,+el.value||0);});
   const {error}=await sb.from(TB.settings).upsert({id:'cond',value:cond,updated_at:new Date().toISOString()});
@@ -1431,7 +1443,7 @@ function runGen(label){
     // 社員（全体生成時のみ）：出勤日を決める
     if(curSec==='all'){
       staff.filter(s=>s.type==='seiki').forEach(s=>{
-        const target=Math.min(s.min_days||5,7);
+        const target=Math.min(s.min_days||7,7);// 空欄＝毎日
         const days=shuffle(dates).filter(d=>{
           const ds=fmtD(d),w=wdIdx(d);
           return !isClosed(d)&&!onVac(s,ds)&&!(s.fixed_days_off||[]).includes(w)&&!sd[s.id][ds];
